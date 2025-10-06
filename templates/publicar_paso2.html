@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center mb-4">
+  <span class="badge bg-success">📦 Publicar Nuevo Producto</span>
+</h2>
+
+<form method="POST" action="/publicar">
+  <!-- Teléfono oculto -->
+  <input type="hidden" name="productor_telefono" value="{{ telefono }}">
+
+  <!-- Datos del Productor -->
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">👤 Datos del Productor</h4>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Nombre *</label>
+        <input type="text" name="productor_nombre" class="form-control" value="{{ nombre }}" required>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Finca (opcional)</label>
+        <input type="text" name="productor_finca" class="form-control" value="{{ finca }}">
+      </div>
+    </div>
+    {% if es_existente %}
+      <div class="alert alert-success d-flex align-items-center" role="alert">
+        ✅ <strong>Productor encontrado.</strong> Puedes editar tus datos si es necesario.
+      </div>
+    {% else %}
+      <div class="alert alert-info d-flex align-items-center" role="alert">
+        ℹ️ <strong>Nuevo productor.</strong> Completa tus datos para publicar.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Datos del Producto -->
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">📦 Datos del Producto</h4>
+    <div class="mb-3">
+      <label class="form-label">Nombre del producto *</label>
+      <input type="text" name="nombre" class="form-control" required placeholder="Ej: Huevos camperos">
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Cantidad *</label>
+        <input type="number" step="0.1" name="cantidad" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Unidad (kg, unidades, racimos...) *</label>
+        <input type="text" name="unidad" class="form-control" required placeholder="kg">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Precio por unidad ($)</label>
+      <input type="number" step="100" name="precio" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Categoría *</label>
+      <select name="categoria_id" class="form-select" required>
+        <option value="">-- Selecciona una categoría --</option>
+        {% for cat in categorias %}
+          {% set estilo = categoria_estilos.get(cat.nombre, {"icono": "🌱"}) %}
+          <option value="{{ cat.id }}">{{ estilo.icono }} {{ cat.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción (opcional)</label>
+      <textarea name="descripcion" class="form-control" rows="3" placeholder="Ej: Frescos, recolectados hoy"></textarea>
+    </div>
+  </div>
+
+  <div class="d-grid gap-2">
+    <button type="submit" class="btn btn-3d">✅ Publicar Producto</button>
+    <a href="/publicar" class="btn btn-outline-3d">⬅️ Cambiar número de celular</a>
+  </div>
+</form>
+
+{% endblock %}

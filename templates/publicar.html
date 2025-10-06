@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center mb-4">
+  <span class="badge bg-success">📱 Ingresa tu número de celular</span>
+</h2>
+
+<div class="card p-4" style="max-width: 500px; margin: 0 auto;">
+  <p class="text-muted text-center mb-4">
+    Usa el mismo número que has usado antes para agrupar todos tus productos.
+  </p>
+  <form method="POST" action="/publicar-paso2">
+    <div class="mb-3">
+      <label class="form-label">Teléfono (10 dígitos, ej: 3101234567) *</label>
+      <input type="text" name="telefono" class="form-control" required pattern="[0-9]{10}" placeholder="3101234567">
+    </div>
+    <button type="submit" class="btn btn-3d w-100">➡️ Continuar</button>
+    <a href="/" class="btn btn-outline-3d mt-2 w-100">⬅️ Volver al inicio</a>
+  </form>
+</div>
+
+{% endblock %}
