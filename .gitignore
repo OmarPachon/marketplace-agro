@@ -1,1 +1,6 @@
-"marketplace.db" 
+# Archivos a ignorar
+marketplace.db
+__pycache__/
+*.pyc
+instance/
+.env
