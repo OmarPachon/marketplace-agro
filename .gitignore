@@ -1,3 +1,12 @@
-"marketplace.db" 
-"__pycache__/" 
-"*.pyc" 
+# Archivos de base de datos
+marketplace.db
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Variables de entorno
+.env
+
+# Carpetas de instancia
+instance/
