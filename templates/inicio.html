@@ -39,7 +39,7 @@
             <strong>Precio:</strong> ${{ "{:,.0f}".format(p.precio) }}<br>
             {% if p.descripcion %}<small class="text-muted">{{ p.descripcion }}</small>{% endif %}
           </p>
-          <a href="https://wa.me/57{{ p.productor.telefono|replace(' ', '')|replace('+', '') }}?text=Hola,%20vi%20tu%20oferta%20de%20{{ p.nombre|urlencode }}%20en%20el%20marketplace" 
+          <a href="https://wa.me/57{{ p.productor.telefono|replace(' ', '')|replace('+', '') }}?text=Hola,%20vi%20tu%20oferta%20de%20{{ p.nombre|urlencode }}%20en%20La%20Tiendita" 
              class="btn btn-3d mb-2" target="_blank">
              📱 Contactar por WhatsApp
           </a>

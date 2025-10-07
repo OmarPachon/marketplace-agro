@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Marketplace Agro</title>
+    <title>La Tiendita</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -137,6 +137,32 @@
             font-size: 0.85rem;
         }
 
+        /* === Ajustes para móviles === */
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 1.1rem !important;
+            }
+            .card-text {
+                font-size: 0.85rem !important;
+            }
+            .btn-3d, .btn-outline-3d, .btn-warning {
+                padding: 8px 12px !important;
+                font-size: 0.85rem !important;
+            }
+            .badge-premium {
+                font-size: 0.75rem !important;
+                padding: 3px 6px !important;
+            }
+            .btn-categoria {
+                padding: 8px 12px !important;
+                min-width: 90px !important;
+                font-size: 0.85rem !important;
+            }
+            h2 .badge {
+                font-size: 1.1rem !important;
+            }
+        }
+
         /* === Pie de página === */
         footer {
             margin-top: auto;
@@ -157,9 +183,8 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Pie de página con autoría -->
     <footer class="text-center text-muted small">
-        &copy; 2025 La Tiendita — Desarrollado Omar Alberto Pachon Pereira. Plataforma para conectar productores rurales con compradores locales.
+        &copy; 2025 La Tiendita Plataforma para conectar productores rurales con compradores locales.Desarrollado por Omar Alberto Pachon Pereira.
     </footer>
 </body>
 </html>
