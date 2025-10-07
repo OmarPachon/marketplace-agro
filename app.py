@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # === Categorías con íconos ===
 CATEGORIA_ESTILOS = {
-    "Alimentos": {"icono": "🍲", "color": "#fff3e0"},
+    "Alimentos Locales": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
     "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
@@ -24,16 +24,12 @@ CATEGORIA_ESTILOS = {
     "Otros": {"icono": "📦", "color": "#eeeeee"},
 }
 
-# === Configuración de la base de datos ===
+# === Configuración de base de datos ===
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-# Detectar entorno: Render (producción) o local (desarrollo)
 if os.environ.get("RENDER"):
-    # Producción: PostgreSQL en Render
     DATABASE_URL = os.environ.get("DATABASE_URL")
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL.replace("postgres://", "postgresql://")
 else:
-    # Desarrollo local: SQLite
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(basedir, 'marketplace.db')}"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -87,7 +83,7 @@ def por_categoria(cat_id):
         categoria_estilos=CATEGORIA_ESTILOS
     )
 
-# === Publicación en dos pasos ===
+# === Rutas de publicación en dos pasos ===
 
 @app.route("/publicar", methods=["GET"])
 def publicar_inicio():
@@ -126,7 +122,7 @@ def guardar_producto():
             db.session.add(productor)
             db.session.flush()
 
-        # 🔑 Límite: solo 1 producto activo para no premium
+        # 🔑 LÍMITE: Solo 1 producto activo para no premium
         if not productor.es_premium:
             productos_activos = Producto.query.filter_by(
                 productor_id=productor.id,
@@ -143,7 +139,7 @@ def guardar_producto():
                         ⭐ Activar Premium
                     </a>
                     <br><br>
-                    <a href="/" style="color:#155724; text-decoration:underline;">← Volver al marketplace</a>
+                    <a href="/" style="color:#155724; text-decoration:underline;">← Volver a La Tiendita</a>
                 </div>
                 """, 403
 
@@ -165,16 +161,22 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === Gestión de ventas ===
-@app.route("/vender/<int:id>")
-def vender(id):
+# === Ruta segura para retirar productos (solo tú) ===
+@app.route("/admin/vender/<int:id>")
+def vender_admin(id):
+    clave_secreta = os.environ.get("CLAVE_VENDER", "mi-clave-secreta")
+    if request.args.get("clave") != clave_secreta:
+        return "🔒 Acceso denegado. Clave incorrecta.", 403
+
     prod = Producto.query.get(id)
     if prod:
         prod.estado = "vendido"
         db.session.commit()
-    return redirect(url_for("inicio"))
+        return f"✅ Producto ID {id} retirado de La Tiendita."
+    else:
+        return "❌ Producto no encontrado.", 404
 
-# === Administración de suscripciones ===
+# === Rutas de administración de suscripciones ===
 
 @app.route("/admin/activar-por-telefono")
 def activar_por_telefono():
