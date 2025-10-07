@@ -12,6 +12,8 @@
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #2e3a2f;
+            display: flex;
+            flex-direction: column;
         }
         .navbar-brand {
             font-weight: 700;
@@ -26,9 +28,8 @@
             border-radius: 12px;
             padding: 10px 16px;
             font-weight: 600;
-            /* Sombra inferior sólida (bisel) + sombra suave */
             box-shadow: 
-                0 4px 0 #a0a0a0,        /* ← sombra dura inferior → efecto bisel */
+                0 4px 0 #a0a0a0,
                 0 6px 8px rgba(0,0,0,0.15);
             transition: all 0.15s ease;
             display: inline-flex;
@@ -52,7 +53,6 @@
             box-shadow: 0 0 0 #a0a0a0, 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Botón "Todos" con acento verde */
         .btn-categoria.todos {
             background: linear-gradient(to bottom, #e6f4ea, #d1e7dd);
             color: #155724;
@@ -136,6 +136,14 @@
             border-radius: 8px;
             font-size: 0.85rem;
         }
+
+        /* === Pie de página === */
+        footer {
+            margin-top: auto;
+            padding: 1rem 0;
+            border-top: 1px solid #e9ecef;
+            background-color: rgba(255, 255, 255, 0.85);
+        }
     </style>
 </head>
 <body>
@@ -148,5 +156,10 @@
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
+
+    <!-- Pie de página con autoría -->
+    <footer class="text-center text-muted small">
+        &copy; 2025 La Tiendita — Desarrollado Omar Alberto Pachon Pereira. Plataforma para conectar productores rurales con compradores locales.
+    </footer>
 </body>
 </html>
