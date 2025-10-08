@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LA TIENDITA: Plataforma para conectar productores rurales con compradores locales</title>
+    <title>La Tiendita Plataforma para conectar productores rurales con compradores locales </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Manifest para PWA -->
@@ -213,11 +213,20 @@
     </div>
 
     <footer class="text-center text-muted small">
-        &copy; 2025 La Tiendita — Desarrollado por OMAR ALBERTO PACHON
+        &copy; 2025 La Tiendita — Desarrollado por OMAR ALBERTO PACHON PEREIRA
     </footer>
 
-    <!-- Script para banner de instalación PWA -->
+    <!-- Service Worker para PWA -->
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Error al registrar SW:', err));
+            });
+        }
+
+        // Banner de instalación
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -225,17 +234,20 @@
             document.getElementById('installBanner').style.display = 'block';
         });
 
-        if (document.getElementById('installBtn')) {
-            document.getElementById('installBtn').addEventListener('click', () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then(() => {
-                        document.getElementById('installBanner').style.display = 'none';
-                        deferredPrompt = null;
-                    });
-                }
-            });
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const installBtn = document.getElementById('installBtn');
+            if (installBtn) {
+                installBtn.addEventListener('click', () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then(() => {
+                            document.getElementById('installBanner').style.display = 'none';
+                            deferredPrompt = null;
+                        });
+                    }
+                });
+            }
+        });
     </script>
 
     <!-- Banner de instalación (solo aparece si el navegador lo permite) -->
