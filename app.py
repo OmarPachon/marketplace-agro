@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 CATEGORIA_ESTILOS = {
-    "Alimentos Locales": {"icono": "🍲", "color": "#fff3e0"},
+    "Alimentos": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
     "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
@@ -155,13 +155,14 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === RUTAS DE EDICIÓN (NUEVO) ===
+# === RUTAS DE EDICIÓN (CORREGIDAS Y SEGURAS) ===
 @app.route("/editar/<int:id>")
 def editar_producto(id):
     token = request.args.get("token")
     producto = Producto.query.get_or_404(id)
-    if token != producto.productor.telefono:
-        return "Acceso denegado", 403
+    # 🔒 VALIDACIÓN SEGURA: si no hay token o no coincide, DENIEGA acceso
+    if not token or token != producto.productor.telefono:
+        return "🔒 Acceso denegado. Solo el dueño puede editar.", 403
     categorias = Categoria.query.all()
     return render_template(
         "editar.html",
