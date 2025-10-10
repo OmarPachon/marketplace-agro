@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-# === Categorías con íconos ===
 CATEGORIA_ESTILOS = {
     "Alimentos Locales": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
@@ -24,7 +23,6 @@ CATEGORIA_ESTILOS = {
     "Otros": {"icono": "📦", "color": "#eeeeee"},
 }
 
-# === Configuración de base de datos ===
 basedir = os.path.abspath(os.path.dirname(__file__))
 if os.environ.get("RENDER"):
     DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -56,7 +54,6 @@ def init_db():
 
 init_db()
 
-# === Rutas principales ===
 @app.route("/")
 def inicio():
     productos = Producto.query\
@@ -82,8 +79,6 @@ def por_categoria(cat_id):
         todas_categorias=categorias,
         categoria_estilos=CATEGORIA_ESTILOS
     )
-
-# === Rutas de publicación en dos pasos ===
 
 @app.route("/publicar", methods=["GET"])
 def publicar_inicio():
@@ -122,7 +117,6 @@ def guardar_producto():
             db.session.add(productor)
             db.session.flush()
 
-        # 🔑 LÍMITE: Solo 1 producto activo para no premium
         if not productor.es_premium:
             productos_activos = Producto.query.filter_by(
                 productor_id=productor.id,
@@ -161,13 +155,40 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === Ruta segura para retirar productos (solo tú) ===
+# === RUTAS DE EDICIÓN (NUEVO) ===
+@app.route("/editar/<int:id>")
+def editar_producto(id):
+    token = request.args.get("token")
+    producto = Producto.query.get_or_404(id)
+    if token != producto.productor.telefono:
+        return "Acceso denegado", 403
+    categorias = Categoria.query.all()
+    return render_template(
+        "editar.html",
+        producto=producto,
+        categorias=categorias,
+        categoria_estilos=CATEGORIA_ESTILOS
+    )
+
+@app.route("/editar/<int:id>", methods=["POST"])
+def guardar_edicion(id):
+    producto = Producto.query.get_or_404(id)
+    # No se valida token en POST porque ya se validó en GET
+    producto.nombre = request.form["nombre"]
+    producto.cantidad = float(request.form["cantidad"])
+    producto.unidad = request.form["unidad"]
+    producto.precio = float(request.form["precio"])
+    producto.descripcion = request.form.get("descripcion", "")
+    producto.categoria_id = int(request.form["categoria_id"])
+    db.session.commit()
+    return redirect(url_for("inicio"))
+
+# === RUTAS DE ADMINISTRACIÓN ===
 @app.route("/admin/vender/<int:id>")
 def vender_admin(id):
     clave_secreta = os.environ.get("CLAVE_VENDER", "mi-clave-secreta")
     if request.args.get("clave") != clave_secreta:
         return "🔒 Acceso denegado. Clave incorrecta.", 403
-
     prod = Producto.query.get(id)
     if prod:
         prod.estado = "vendido"
@@ -175,8 +196,6 @@ def vender_admin(id):
         return f"✅ Producto ID {id} retirado de La Tiendita."
     else:
         return "❌ Producto no encontrado.", 404
-
-# === Rutas de administración de suscripciones ===
 
 @app.route("/admin/activar-por-telefono")
 def activar_por_telefono():
@@ -191,7 +210,7 @@ def activar_por_telefono():
             db.session.commit()
             return f"✅ ¡Activado! {prod.nombre} es Premium por {meses} meses."
         else:
-            return "❌ Productor no encontrado. Publica al menos un producto primero."
+            return "❌ Productor no encontrado."
     return "📞 Usa: ?tel=3101234567&meses=2"
 
 @app.route("/admin/actualizar-suscripciones")
@@ -207,6 +226,5 @@ def actualizar_suscripciones():
     db.session.commit()
     return f"✅ {actualizados} suscripciones desactivadas por vencimiento."
 
-# === Ejecución ===
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
