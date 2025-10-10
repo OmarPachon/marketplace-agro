@@ -1,100 +1,88 @@
 {% extends "base.html" %}
 {% block content %}
 
-<style>
-  .form-background {
-    background: url('/static/fondo_formulario.jpg') center / cover no-repeat;
-    min-height: 100vh;
-    padding: 20px 0;
-  }
-  .container {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    padding: 30px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-</style>
+<h2 class="text-center mb-4">
+  <span class="badge bg-success">📦 Publicar en La Tiendita</span>
+</h2>
 
-<div class="form-background">
-  <div class="container">
-    <h2 class="text-center mb-4">
-      <span class="badge bg-success">📦 Publicar en La Tiendita</span>
-    </h2>
+<form method="POST" action="/publicar">
+  <input type="hidden" name="productor_telefono" value="{{ telefono }}">
 
-    <form method="POST" action="/publicar">
-      <!-- Datos del Productor -->
-      <div class="card p-4 mb-4">
-        <h4 class="mb-3">👤 Datos del Productor</h4>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Nombre *</label>
-            <input type="text" name="productor_nombre" class="form-control" value="{{ nombre }}" required>
-          </div>
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Finca (opcional)</label>
-            <input type="text" name="productor_finca" class="form-control" value="{{ finca }}">
-          </div>
-        </div>
-        {% if es_existente %}
-          <div class="alert alert-success d-flex align-items-center" role="alert">
-            ✅ <strong>Productor encontrado.</strong> Puedes editar tus datos si es necesario.
-          </div>
-        {% else %}
-          <div class="alert alert-info d-flex align-items-center" role="alert">
-            ℹ️ <strong>Nuevo productor.</strong> Completa tus datos para publicar.
-          </div>
-        {% endif %}
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">👤 Datos del Productor</h4>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Nombre *</label>
+        <input type="text" name="productor_nombre" class="form-control" value="{{ nombre }}" required>
       </div>
-
-      <!-- Datos del Producto -->
-      <div class="card p-4 mb-4">
-        <h4 class="mb-3">📦 Datos del Producto</h4>
-        <div class="mb-3">
-          <label class="form-label">Nombre del producto *</label>
-          <input type="text" name="nombre" class="form-control" required placeholder="Ej: Huevos camperos">
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Cantidad *</label>
-            <input type="number" step="0.1" name="cantidad" class="form-control" required>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Unidad (kg, unidades, racimos...) *</label>
-            <input type="text" name="unidad" class="form-control" required placeholder="kg">
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Precio por unidad ($)</label>
-          <input type="number" step="100" name="precio" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Categoría *</label>
-          <select name="categoria_id" class="form-select" required>
-            <option value="">-- Selecciona una categoría --</option>
-            {% for cat in categorias %}
-              {% set estilo = categoria_estilos.get(cat.nombre, {"icono": "🌱"}) %}
-              <option value="{{ cat.id }}">{{ estilo.icono }} {{ cat.nombre }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Descripción (opcional)</label>
-          <textarea name="descripcion" class="form-control" rows="3" placeholder="Ej: Frescos, recolectados hoy"></textarea>
-        </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Finca (opcional)</label>
+        <input type="text" name="productor_finca" class="form-control" value="{{ finca }}">
       </div>
-
-      <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-3d">✅ Publicar Producto</button>
-        <a href="/publicar" class="btn btn-outline-3d">⬅️ Cambiar número de celular</a>
+    </div>
+    {% if es_existente %}
+      <div class="alert alert-success d-flex align-items-center" role="alert">
+        ✅ <strong>Productor encontrado.</strong> Puedes editar tus datos si es necesario.
       </div>
-    </form>
+    {% else %}
+      <div class="alert alert-info d-flex align-items-center" role="alert">
+        ℹ️ <strong>Nuevo productor.</strong> Completa tus datos para publicar.
+      </div>
+    {% endif %}
   </div>
-</div>
+
+  <div class="card p-4 mb-4">
+    <h4 class="mb-3">📦 Datos del Producto</h4>
+    <div class="mb-3">
+      <label class="form-label">Nombre del producto *</label>
+      <input type="text" name="nombre" class="form-control" required placeholder="Ej: Huevos camperos">
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Cantidad *</label>
+        <input type="number" step="0.1" name="cantidad" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Unidad (kg, unidades, racimos...) *</label>
+        <input type="text" name="unidad" class="form-control" required placeholder="kg">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Precio por unidad ($)</label>
+      <input type="number" step="100" name="precio" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Categoría *</label>
+      <select name="categoria_id" class="form-select" required>
+        <option value="">-- Selecciona una categoría --</option>
+        {% for cat in categorias %}
+          {% set estilo = categoria_estilos.get(cat.nombre, {"icono": "🌱"}) %}
+          <option value="{{ cat.id }}" {% if cat.id == producto.categoria_id if producto else false %}selected{% endif %}>
+            {{ estilo.icono }} {{ cat.nombre }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción (opcional)</label>
+      <textarea name="descripcion" class="form-control" rows="3" placeholder="Ej: Frescos, recolectados hoy"></textarea>
+    </div>
+  </div>
+
+  <!-- Mensaje de edición por WhatsApp -->
+  <div class="alert alert-info mt-3">
+    📲 ¿Necesitas actualizar tu oferta después de publicarla?  
+    <strong>Escríbenos por WhatsApp</strong> y lo hacemos al instante.
+  </div>
+
+  <div class="d-grid gap-2">
+    <button type="submit" class="btn btn-3d">✅ Publicar Producto</button>
+    <a href="/publicar" class="btn btn-outline-3d">⬅️ Cambiar número de celular</a>
+  </div>
+</form>
 
 {% endblock %}
