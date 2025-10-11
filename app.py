@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 CATEGORIA_ESTILOS = {
-    "Alimentos ": {"icono": "🍲", "color": "#fff3e0"},
+    "Alimentos": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
-    "Legumbres": {"icono": "🥔", "color": "#fff8e1"},
+    "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
     "Lácteos": {"icono": "🥛", "color": "#f3e5f5"},
     "Huevos": {"icono": "🥚", "color": "#e3f2fd"},
     "Miel": {"icono": "🍯", "color": "#fff3e0"},
@@ -155,7 +155,7 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === RUTAS DE GESTIÓN DE PRODUCTOS (POR NÚMERO DE CELULAR) ===
+# === RUTAS DE GESTIÓN DE PRODUCTOS (CORREGIDAS) ===
 @app.route("/mis-productos", methods=["GET", "POST"])
 def mis_productos():
     if request.method == "POST":
@@ -166,7 +166,8 @@ def mis_productos():
                 productor_id=productor.id,
                 estado="disponible"
             ).all()
-            return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS)
+            categorias = Categoria.query.all()  # ← Categorías reales
+            return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS, todas_categorias=categorias)
         else:
             return "❌ Número no encontrado. Publica al menos un producto primero.", 404
     return render_template("ingresar_telefono.html")
@@ -196,7 +197,8 @@ def mis_productos_post(telefono):
         productor_id=productor.id,
         estado="disponible"
     ).all()
-    return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS)
+    categorias = Categoria.query.all()  # ← Categorías reales
+    return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS, todas_categorias=categorias)
 
 @app.route("/admin/retirar/<int:id>")
 def retirar_producto_admin(id):
