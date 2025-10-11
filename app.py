@@ -155,7 +155,25 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === RUTAS DE GESTIÓN DE PRODUCTOS (CORREGIDAS) ===
+# === RUTA TEMPORAL PARA ACTUALIZAR BASE DE DATOS EN RENDER GRATUITO ===
+@app.route("/admin/actualizar-db")
+def actualizar_db():
+    with app.app_context():
+        try:
+            db.engine.execute("ALTER TABLE productor ADD COLUMN es_premium BOOLEAN DEFAULT FALSE")
+        except Exception as e:
+            print("es_premium ya existe o error:", str(e))
+        try:
+            db.engine.execute("ALTER TABLE productor ADD COLUMN fecha_suscripcion TIMESTAMP")
+        except Exception as e:
+            print("fecha_suscripcion ya existe o error:", str(e))
+        try:
+            db.engine.execute("ALTER TABLE productor ADD COLUMN meses_pagados INTEGER DEFAULT 0")
+        except Exception as e:
+            print("meses_pagados ya existe o error:", str(e))
+        return "✅ Base de datos actualizada. Ahora puedes publicar productos."
+
+# === RUTAS DE GESTIÓN DE PRODUCTOS ===
 @app.route("/mis-productos", methods=["GET", "POST"])
 def mis_productos():
     if request.method == "POST":
@@ -166,7 +184,7 @@ def mis_productos():
                 productor_id=productor.id,
                 estado="disponible"
             ).all()
-            categorias = Categoria.query.all()  # ← Categorías reales
+            categorias = Categoria.query.all()
             return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS, todas_categorias=categorias)
         else:
             return "❌ Número no encontrado. Publica al menos un producto primero.", 404
@@ -197,7 +215,7 @@ def mis_productos_post(telefono):
         productor_id=productor.id,
         estado="disponible"
     ).all()
-    categorias = Categoria.query.all()  # ← Categorías reales
+    categorias = Categoria.query.all()
     return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS, todas_categorias=categorias)
 
 @app.route("/admin/retirar/<int:id>")
