@@ -59,9 +59,8 @@
       <select name="categoria_id" class="form-select" required>
         <option value="">-- Selecciona una categoría --</option>
         {% for cat in categorias %}
-          {% set estilo = categoria_estilos.get(cat.nombre, {"icono": "🌱"}) %}
-          <option value="{{ cat.id }}" {% if cat.id == producto.categoria_id if producto else false %}selected{% endif %}>
-            {{ estilo.icono }} {{ cat.nombre }}
+          <option value="{{ cat.id }}" {% if producto and cat.id == producto.categoria_id %}selected{% endif %}>
+            {{ categoria_estilos[cat.nombre].icono }} {{ cat.nombre }}
           </option>
         {% endfor %}
       </select>
@@ -73,7 +72,6 @@
     </div>
   </div>
 
-  <!-- Mensaje de edición por WhatsApp -->
   <div class="alert alert-info mt-3">
     📲 ¿Necesitas actualizar tu oferta después de publicarla?  
     <strong>Escríbenos por WhatsApp</strong> y lo hacemos al instante.
