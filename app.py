@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 CATEGORIA_ESTILOS = {
-    "Alimentos": {"icono": "🍲", "color": "#fff3e0"},
+    "Alimentos Region": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
     "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
@@ -155,36 +155,8 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === RUTAS DE EDICIÓN (CORREGIDAS Y SEGURAS) ===
-@app.route("/editar/<int:id>")
-def editar_producto(id):
-    token = request.args.get("token")
-    producto = Producto.query.get_or_404(id)
-    # 🔒 VALIDACIÓN SEGURA: si no hay token o no coincide, DENIEGA acceso
-    if not token or token != producto.productor.telefono:
-        return "🔒 Acceso denegado. Solo el dueño puede editar.", 403
-    categorias = Categoria.query.all()
-    return render_template(
-        "editar.html",
-        producto=producto,
-        categorias=categorias,
-        categoria_estilos=CATEGORIA_ESTILOS
-    )
+# === RUTAS DE ADMINISTRACIÓN (SEGURAS) ===
 
-@app.route("/editar/<int:id>", methods=["POST"])
-def guardar_edicion(id):
-    producto = Producto.query.get_or_404(id)
-    # No se valida token en POST porque ya se validó en GET
-    producto.nombre = request.form["nombre"]
-    producto.cantidad = float(request.form["cantidad"])
-    producto.unidad = request.form["unidad"]
-    producto.precio = float(request.form["precio"])
-    producto.descripcion = request.form.get("descripcion", "")
-    producto.categoria_id = int(request.form["categoria_id"])
-    db.session.commit()
-    return redirect(url_for("inicio"))
-
-# === RUTAS DE ADMINISTRACIÓN ===
 @app.route("/admin/vender/<int:id>")
 def vender_admin(id):
     clave_secreta = os.environ.get("CLAVE_VENDER", "mi-clave-secreta")
