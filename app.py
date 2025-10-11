@@ -9,7 +9,7 @@ CATEGORIA_ESTILOS = {
     "Alimentos": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
-    "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
+    "Legumbres": {"icono": "🥔", "color": "#fff8e1"},
     "Lácteos": {"icono": "🥛", "color": "#f3e5f5"},
     "Huevos": {"icono": "🥚", "color": "#e3f2fd"},
     "Miel": {"icono": "🍯", "color": "#fff3e0"},
