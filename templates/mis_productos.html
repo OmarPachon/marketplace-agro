@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center mb-4">Mis Productos</h2>
+
+{% if productos %}
+  <div class="row g-3">
+  {% for p in productos %}
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ p.nombre }} <small class="text-muted">#{{ p.id }}</small></h5>
+          <p class="card-text">
+            <strong>Categoría:</strong> {{ p.categoria.nombre }}<br>
+            <strong>Cantidad:</strong> {{ p.cantidad }} {{ p.unidad }}<br>
+            <strong>Precio:</strong> ${{ "{:,.0f}".format(p.precio) }}
+          </p>
+          <!-- Formulario de edición -->
+          <form method="POST" action="/admin/editar/{{ p.id }}" class="mb-2">
+            <input type="hidden" name="telefono" value="{{ telefono }}">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <input type="text" name="nombre" class="form-control form-control-sm" value="{{ p.nombre }}" required>
+              </div>
+              <div class="col-md-2">
+                <input type="number" step="0.1" name="cantidad" class="form-control form-control-sm" value="{{ p.cantidad }}" required>
+              </div>
+              <div class="col-md-2">
+                <input type="text" name="unidad" class="form-control form-control-sm" value="{{ p.unidad }}" required>
+              </div>
+              <div class="col-md-2">
+                <input type="number" step="100" name="precio" class="form-control form-control-sm" value="{{ p.precio }}" required>
+              </div>
+              <div class="col-md-3">
+                <select name="categoria_id" class="form-select form-select-sm">
+                  {% for cat in categoria_estilos %}
+                    {% set nombre_cat = cat %}
+                    {% set id_cat = loop.index0 + 1 %}
+                    {% for c in todas_categorias if c.nombre == nombre_cat %}
+                      <option value="{{ c.id }}" {% if c.id == p.categoria_id %}selected{% endif %}>
+                        {{ c.nombre }}
+                      </option>
+                    {% endfor %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-outline-success btn-sm">✅ Guardar</button>
+          </form>
+          <!-- Botón de retirar -->
+          <a href="/admin/retirar/{{ p.id }}?token={{ telefono }}" class="btn btn-outline-danger btn-sm">
+            🗑️ Retirar
+          </a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center py-5">
+    <p class="text-muted">No tienes productos activos.</p>
+  </div>
+{% endif %}
+
+<a href="/mis-productos" class="btn btn-outline-3d mt-3">← Cambiar número</a>
+
+{% endblock %}

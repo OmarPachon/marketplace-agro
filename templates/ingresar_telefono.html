@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card p-4" style="max-width: 500px; margin: 50px auto;">
+  <h3 class="text-center mb-4">📱 Gestionar mis productos</h3>
+  <p class="text-muted text-center mb-4">
+    Ingresa tu número de celular para ver y editar tus ofertas.
+  </p>
+  <form method="POST" action="/mis-productos">
+    <div class="mb-3">
+      <label class="form-label">Número de celular (10 dígitos)</label>
+      <input type="text" name="telefono" class="form-control" required pattern="[0-9]{10}" placeholder="3101234567">
+    </div>
+    <button type="submit" class="btn btn-3d w-100">Ver mis productos</button>
+    <a href="/" class="btn btn-outline-3d mt-2 w-100">← Volver al inicio</a>
+  </form>
+</div>
+
+{% endblock %}

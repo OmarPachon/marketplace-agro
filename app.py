@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 CATEGORIA_ESTILOS = {
-    "Alimentos Region": {"icono": "🍲", "color": "#fff3e0"},
+    "Alimentos ": {"icono": "🍲", "color": "#fff3e0"},
     "Frutas": {"icono": "🍎", "color": "#ffecd2"},
     "Verduras": {"icono": "🥬", "color": "#e8f5e9"},
-    "Tubérculos": {"icono": "🥔", "color": "#fff8e1"},
+    "Legumbres": {"icono": "🥔", "color": "#fff8e1"},
     "Lácteos": {"icono": "🥛", "color": "#f3e5f5"},
     "Huevos": {"icono": "🥚", "color": "#e3f2fd"},
     "Miel": {"icono": "🍯", "color": "#fff3e0"},
@@ -155,8 +155,60 @@ def guardar_producto():
         print("Error:", str(e))
         return "Error al guardar. Verifica los datos.", 500
 
-# === RUTAS DE ADMINISTRACIÓN (SEGURAS) ===
+# === RUTAS DE GESTIÓN DE PRODUCTOS (POR NÚMERO DE CELULAR) ===
+@app.route("/mis-productos", methods=["GET", "POST"])
+def mis_productos():
+    if request.method == "POST":
+        telefono = request.form["telefono"]
+        productor = Productor.query.filter_by(telefono=telefono).first()
+        if productor:
+            productos = Producto.query.filter_by(
+                productor_id=productor.id,
+                estado="disponible"
+            ).all()
+            return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS)
+        else:
+            return "❌ Número no encontrado. Publica al menos un producto primero.", 404
+    return render_template("ingresar_telefono.html")
 
+@app.route("/admin/editar/<int:id>", methods=["POST"])
+def editar_producto_admin(id):
+    telefono = request.form.get("telefono")
+    producto = Producto.query.get_or_404(id)
+    if not telefono or telefono != producto.productor.telefono:
+        return "🔒 Acceso denegado.", 403
+    
+    producto.nombre = request.form["nombre"]
+    producto.cantidad = float(request.form["cantidad"])
+    producto.unidad = request.form["unidad"]
+    producto.precio = float(request.form["precio"])
+    producto.descripcion = request.form.get("descripcion", "")
+    producto.categoria_id = int(request.form["categoria_id"])
+    db.session.commit()
+    return redirect(url_for("mis_productos_post", telefono=telefono))
+
+@app.route("/mis-productos/<telefono>")
+def mis_productos_post(telefono):
+    productor = Productor.query.filter_by(telefono=telefono).first()
+    if not productor:
+        return "❌ Número no válido.", 404
+    productos = Producto.query.filter_by(
+        productor_id=productor.id,
+        estado="disponible"
+    ).all()
+    return render_template("mis_productos.html", productos=productos, telefono=telefono, categoria_estilos=CATEGORIA_ESTILOS)
+
+@app.route("/admin/retirar/<int:id>")
+def retirar_producto_admin(id):
+    telefono = request.args.get("token")
+    producto = Producto.query.get_or_404(id)
+    if not telefono or telefono != producto.productor.telefono:
+        return "🔒 Acceso denegado.", 403
+    producto.estado = "vendido"
+    db.session.commit()
+    return redirect(url_for("mis_productos_post", telefono=telefono))
+
+# === RUTAS DE ADMINISTRACIÓN ===
 @app.route("/admin/vender/<int:id>")
 def vender_admin(id):
     clave_secreta = os.environ.get("CLAVE_VENDER", "mi-clave-secreta")
